@@ -9,6 +9,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/ShootingComponent.h"
+#include "Utils/CustomUtils.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,8 @@ AIDGJ3Character::AIDGJ3Character()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	ShootingComponent = CreateDefaultSubobject<UShootingComponent>(TEXT("ShootingComponent"));
 }
 
 void AIDGJ3Character::BeginPlay()
@@ -69,6 +73,8 @@ void AIDGJ3Character::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+
+
 void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -84,6 +90,10 @@ void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIDGJ3Character::Look);
 
+		//Shooting
+		EnhancedInputComponent->BindAction(GreenPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootGreenPortal);
+		EnhancedInputComponent->BindAction(RedPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootRedPortal);
+		
 	}
 
 }
@@ -124,6 +134,14 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 	}
 }
 
+void AIDGJ3Character::ShootRedPortal()
+{
+	PRINT_DEBUG_MESSAGE("Shooting Red");
+	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Red);
+}
 
-
-
+void AIDGJ3Character::ShootGreenPortal()
+{
+	PRINT_DEBUG_MESSAGE("Shooting Red");
+	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Green);
+}

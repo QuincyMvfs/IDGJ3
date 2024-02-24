@@ -8,6 +8,7 @@
 #include "IDGJ3Character.generated.h"
 
 
+class UShootingComponent;
 UCLASS(config=Game)
 class AIDGJ3Character : public ACharacter
 {
@@ -37,6 +38,18 @@ class AIDGJ3Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	// Shoot green ray for portal (left click)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* GreenPortal;
+
+	// Shoot green ray for portal (right click)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* RedPortal;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UShootingComponent* ShootingComponent;
+
 public:
 	AIDGJ3Character();
 	
@@ -48,7 +61,10 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	void ShootGreenPortal();
 			
+	void ShootRedPortal();
 
 protected:
 	// APawn interface
@@ -63,4 +79,6 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
+
+
 
