@@ -138,22 +138,37 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 void AIDGJ3Character::ShootRedPortal()
 {
 	PRINT_DEBUG_MESSAGE("Shooting Red");
+
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Red);
 
+	OnRedShoot.Broadcast(Hit);
+	
 	if(!IsValid(Hit.GetActor())) return;
 
-	if(Hit.GetActor()->Implements<UActivatable>())
-	{
-		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
-        if (ActivatableActor)
-        {
-            ActivatableActor->Execute_Activate(Hit.GetActor());
-        }
-	}
+	TryActivatePortal(Hit);
 }
 
 void AIDGJ3Character::ShootGreenPortal()
 {
 	PRINT_DEBUG_MESSAGE("Shooting Green");
-	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Green);
+
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Green);
+
+	OnGreenShoot.Broadcast(Hit);
+	
+	if(!IsValid(Hit.GetActor())) return;
+	
+	TryActivatePortal(Hit);
+}
+
+void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
+{
+	if(Hit.GetActor()->Implements<UActivatable>())
+	{
+		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
+		if (ActivatableActor)
+		{
+			ActivatableActor->Execute_Activate(Hit.GetActor());
+		}
+	}
 }

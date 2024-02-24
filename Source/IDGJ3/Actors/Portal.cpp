@@ -24,6 +24,21 @@ APortal::APortal()
 	Arrow->SetupAttachment(Pivot);
 }
 
+bool APortal::GetIsActive()
+{
+	return bIsActive;
+}
+
+void APortal::SetIsActive(bool IsActive)
+{
+	bIsActive = IsActive;
+
+	if(!bIsActive)
+	{
+		OnPortalDeactivated.Broadcast();
+	}
+}
+
 void APortal::BeginPlay()
 {
 	Super::BeginPlay();
@@ -32,6 +47,10 @@ void APortal::BeginPlay()
 void APortal::Activate_Implementation()
 {
 	IActivatable::Activate_Implementation();
+	SetIsActive(true);
+	
+	OnPortalActivated.Broadcast();
+	
 
 	PRINT_DEBUG_MESSAGE("Activated");
 }
