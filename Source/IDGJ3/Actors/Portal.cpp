@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
+#include "IDGJ3/Subsystems/PortalsManagerSubsystem.h"
 #include "IDGJ3/Utils/CustomUtils.h"
 
 // Sets default values
@@ -14,8 +16,11 @@ APortal::APortal()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	Pivot = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	Pivot = CreateDefaultSubobject<USceneComponent>(TEXT("Pivot"));
 	RootComponent = Pivot;
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
+	BoxComponent->SetupAttachment(Pivot);
 	
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Physical Body"));
 	StaticMesh->SetupAttachment(Pivot);
@@ -39,6 +44,11 @@ void APortal::SetIsActive(bool IsActive)
 	}
 }
 
+EPortalType APortal::GetPortalType()
+{
+	return PortalType;
+}
+
 void APortal::BeginPlay()
 {
 	Super::BeginPlay();
@@ -48,6 +58,14 @@ void APortal::Activate_Implementation()
 {
 	IActivatable::Activate_Implementation();
 	SetIsActive(true);
+
+	UWorld* World = GetWorld();
+	if(!IsValid(World)) return;
+		
+	if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+	{
+		PortalType = PortalsManager->GetKeyfromValue(this);
+	}
 	
 	OnPortalActivated.Broadcast();
 }
