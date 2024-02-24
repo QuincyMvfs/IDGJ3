@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/ShootingComponent.h"
+#include "Interfaces/Activatable.h"
 #include "Utils/CustomUtils.h"
 
 
@@ -137,11 +138,22 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 void AIDGJ3Character::ShootRedPortal()
 {
 	PRINT_DEBUG_MESSAGE("Shooting Red");
-	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Red);
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Red);
+
+	if(!IsValid(Hit.GetActor())) return;
+
+	if(Hit.GetActor()->Implements<UActivatable>())
+	{
+		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
+        if (ActivatableActor)
+        {
+            ActivatableActor->Execute_Activate(Hit.GetActor());
+        }
+	}
 }
 
 void AIDGJ3Character::ShootGreenPortal()
 {
-	PRINT_DEBUG_MESSAGE("Shooting Red");
+	PRINT_DEBUG_MESSAGE("Shooting Green");
 	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Green);
 }
