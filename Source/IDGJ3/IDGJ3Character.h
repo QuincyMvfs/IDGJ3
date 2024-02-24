@@ -49,6 +49,9 @@ class AIDGJ3Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* RedPortal;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* PauseObject;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnGreenShoot OnGreenShoot;
 
@@ -87,7 +90,7 @@ protected:
 	void TryActivatePortal(FHitResult Hit);
 
 	UFUNCTION()
-	void CheckIfPortalValid();
+	void Pause();
 	
 protected:
 	// APawn interface

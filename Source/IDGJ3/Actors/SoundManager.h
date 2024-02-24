@@ -35,7 +35,7 @@ public:
 	TArray<USoundWave*> M_GrabSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Grabbing")
-	TArray<USoundWave*> M_GrabbingSounds;
+	USoundWave* M_GrabbingSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Grabbing")
 	TArray<USoundWave*> M_ThrowSounds;
