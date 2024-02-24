@@ -20,8 +20,7 @@ public:
 	UShootingComponent();
 
 	UFUNCTION(BlueprintCallable)
-	void Shoot(const FVector& Start, const FVector& Direction, FColor Color);
-
+	FHitResult Shoot(const FVector& Start, const FVector& Direction, FColor Color);
 
 protected:
 	virtual void BeginPlay() override;
