@@ -186,8 +186,6 @@ void AIDGJ3Character::ShootPortal(EPortalType PortalType)
 
 	if (!IsValid(Hit.GetActor())) return;
 
-	TryActivatePortal(Hit);
-
 	UWorld* World = GetWorld();
 	if (!IsValid(World)) return;
 
@@ -198,6 +196,7 @@ void AIDGJ3Character::ShootPortal(EPortalType PortalType)
 			PortalsManager->SetPortal(PortalType, Portal);
 		}
 	}
+	TryActivatePortal(Hit);
 }
 
 void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
