@@ -13,6 +13,7 @@ class APortal;
 UENUM(BlueprintType)
 enum class EPortalType : uint8
 {
+	Null,
 	Green,
 	Red
 };
@@ -24,12 +25,18 @@ class IDGJ3_API UPortalsManagerSubsystem : public UWorldSubsystem
 
 protected:
 	UPROPERTY()
-	TMap<EPortalType, APortal*> Portals;
+	TMap<EPortalType, APortal*> PortalsMap;
 
-public:
+public:	
 	UFUNCTION(BlueprintPure)
 	APortal* GetPortal(EPortalType PortalType);
 
 	UFUNCTION(BlueprintCallable)
 	void SetPortal(EPortalType PortalType, APortal* Portal);
+
+	UFUNCTION(BlueprintPure)
+	TMap<EPortalType, APortal*> GetPortalsMap();
+
+	UFUNCTION()
+	EPortalType GetKeyfromValue(APortal* Portal);
 };

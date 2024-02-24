@@ -7,6 +7,7 @@
 #include "IDGJ3/Interfaces/Activatable.h"
 #include "Portal.generated.h"
 
+enum class EPortalType : uint8;
 class UBoxComponent;
 class UArrowComponent;
 class UStaticMeshComponent;
@@ -37,6 +38,9 @@ protected:
 	UArrowComponent* Arrow;
 
 	UPROPERTY(BlueprintReadOnly)
+	EPortalType PortalType;
+
+	UPROPERTY(BlueprintReadOnly)
 	uint8 bIsActive : 1;
 
 protected:
@@ -53,4 +57,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetIsActive(bool IsActive);
 
+	UFUNCTION(BlueprintPure)
+	EPortalType GetPortalType();
 };
