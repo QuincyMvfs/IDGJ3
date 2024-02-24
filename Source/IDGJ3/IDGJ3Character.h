@@ -7,6 +7,9 @@
 #include "InputActionValue.h"
 #include "IDGJ3Character.generated.h"
 
+enum class EPortalType : uint8;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedShoot, const FHitResult&, HitResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGreenShoot, const FHitResult&, HitResult);
 
 class UShootingComponent;
 UCLASS(config=Game)
@@ -46,6 +49,15 @@ class AIDGJ3Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* RedPortal;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* PauseObject;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGreenShoot OnGreenShoot;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRedShoot OnRedShoot;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UShootingComponent* ShootingComponent;
@@ -62,10 +74,24 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	UFUNCTION()
 	void ShootGreenPortal();
-			
+
+	UFUNCTION()
 	void ShootRedPortal();
 
+	UFUNCTION()
+	void ShootPortal(EPortalType PortalType);
+
+	UFUNCTION()
+	bool InvalidateExistingPortal(EPortalType PortalType);
+
+	UFUNCTION()
+	void TryActivatePortal(FHitResult Hit);
+
+	UFUNCTION()
+	void Pause();
+	
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

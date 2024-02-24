@@ -9,8 +9,11 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Actors/Portal.h"
 #include "Components/ShootingComponent.h"
 #include "Interfaces/Activatable.h"
+#include "Interfaces/Pausable.h" 
+#include "Subsystems/PortalsManagerSubsystem.h"
 #include "Utils/CustomUtils.h"
 
 
@@ -94,6 +97,7 @@ void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 		//Shooting
 		EnhancedInputComponent->BindAction(GreenPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootGreenPortal);
 		EnhancedInputComponent->BindAction(RedPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootRedPortal);
+		EnhancedInputComponent->BindAction(PauseObject, ETriggerEvent::Completed, this, &AIDGJ3Character::Pause);
 		
 	}
 
@@ -137,23 +141,84 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 
 void AIDGJ3Character::ShootRedPortal()
 {
-	PRINT_DEBUG_MESSAGE("Shooting Red");
-	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Red);
-
-	if(!IsValid(Hit.GetActor())) return;
-
-	if(Hit.GetActor()->Implements<UActivatable>())
-	{
-		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
-        if (ActivatableActor)
-        {
-            ActivatableActor->Execute_Activate(Hit.GetActor());
-        }
-	}
+	if(InvalidateExistingPortal(EPortalType::Red)) return;
+	ShootPortal(EPortalType::Red);
 }
 
 void AIDGJ3Character::ShootGreenPortal()
+{			
+	if(InvalidateExistingPortal(EPortalType::Green)) return;
+	ShootPortal(EPortalType::Green);
+}
+
+
+bool AIDGJ3Character::InvalidateExistingPortal(EPortalType PortalType)
 {
-	PRINT_DEBUG_MESSAGE("Shooting Green");
-	ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Green);
+	UWorld* World = GetWorld();
+	if(!IsValid(World)) return false;
+	
+	if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+	{
+		APortal* Portal = PortalsManager->GetPortal(PortalType);
+		if(IsValid(Portal))
+		{
+			Portal->SetIsActive(false);
+			PortalsManager->SetPortal(PortalType, nullptr);
+			return true;
+		}
+	}
+	return false;
+}
+
+void AIDGJ3Character::ShootPortal(EPortalType PortalType)
+{
+	FColor Color = (PortalType == EPortalType::Green) ? FColor::Green : FColor::Red;
+	PRINT_DEBUG_MESSAGE((PortalType == EPortalType::Green) ? TEXT("Shooting Green") : TEXT("Shooting Red"));
+
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), Color);
+
+	if (PortalType == EPortalType::Green)
+	{
+		OnGreenShoot.Broadcast(Hit);
+	}
+	else if (PortalType == EPortalType::Red)
+	{
+		OnRedShoot.Broadcast(Hit);
+	}
+
+	if (!IsValid(Hit.GetActor())) return;
+
+	UWorld* World = GetWorld();
+	if (!IsValid(World)) return;
+
+	if (APortal* Portal = Cast<APortal>(Hit.GetActor()))
+	{
+		if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+		{
+			PortalsManager->SetPortal(PortalType, Portal);
+		}
+	}
+	TryActivatePortal(Hit);
+}
+
+void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
+{
+	if(Hit.GetActor()->Implements<UActivatable>())
+	{
+		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
+		if (ActivatableActor)
+		{
+			ActivatableActor->Execute_Activate(Hit.GetActor());
+		}
+	}
+}
+
+void AIDGJ3Character::Pause()
+{
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
+	
+	if (Hit.GetActor() && Hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+	{
+		IPausable::Execute_TogglePause(Hit.GetActor());
+	}
 }
