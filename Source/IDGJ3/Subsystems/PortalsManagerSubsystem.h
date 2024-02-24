@@ -39,4 +39,7 @@ public:
 
 	UFUNCTION()
 	EPortalType GetKeyfromValue(APortal* Portal);
+
+	UFUNCTION(BlueprintPure)
+	EPortalType GetOppositeKey(EPortalType CurrentPortalType) ;
 };

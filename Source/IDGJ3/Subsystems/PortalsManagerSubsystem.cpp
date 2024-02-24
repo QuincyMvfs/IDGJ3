@@ -42,3 +42,18 @@ EPortalType UPortalsManagerSubsystem::GetKeyfromValue(APortal* Portal)
 	}
 	return EPortalType::Null;
 }
+
+EPortalType UPortalsManagerSubsystem::GetOppositeKey(EPortalType CurrentPortalType) 
+{
+	switch (CurrentPortalType)
+	{
+	case EPortalType::Green:
+		return EPortalType::Red;
+		
+	case EPortalType::Red:
+		return EPortalType::Green;
+		
+	default:
+		return EPortalType::Null; 
+	}
+}

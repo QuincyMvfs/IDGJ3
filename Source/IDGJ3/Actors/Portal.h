@@ -11,6 +11,7 @@ enum class EPortalType : uint8;
 class UBoxComponent;
 class UArrowComponent;
 class UStaticMeshComponent;
+class USceneComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalDeactivated);
@@ -29,7 +30,10 @@ private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UBoxComponent* Pivot;
+	USceneComponent* Pivot;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UStaticMeshComponent* StaticMesh;
@@ -37,7 +41,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UArrowComponent* Arrow;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "PortalType")
 	EPortalType PortalType;
 
 	UPROPERTY(BlueprintReadOnly)

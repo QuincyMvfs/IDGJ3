@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
 #include "IDGJ3/Subsystems/PortalsManagerSubsystem.h"
 #include "IDGJ3/Utils/CustomUtils.h"
 
@@ -15,8 +16,11 @@ APortal::APortal()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	Pivot = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	Pivot = CreateDefaultSubobject<USceneComponent>(TEXT("Pivot"));
 	RootComponent = Pivot;
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
+	BoxComponent->SetupAttachment(Pivot);
 	
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Physical Body"));
 	StaticMesh->SetupAttachment(Pivot);
