@@ -44,8 +44,11 @@ public:
 	TArray<USoundWave*> M_LetGoSounds;
 
 	// Footsteps
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Footsteps")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Player")
 	TArray<USoundWave*> M_Footsteps;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Player")
+	TArray<USoundWave*> M_ClickingSounds;
 
 	// Object Dropping
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
