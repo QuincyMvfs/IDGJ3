@@ -12,6 +12,7 @@
 #include "Actors/Portal.h"
 #include "Components/ShootingComponent.h"
 #include "Interfaces/Activatable.h"
+#include "Interfaces/Pausable.h" 
 #include "Subsystems/PortalsManagerSubsystem.h"
 #include "Utils/CustomUtils.h"
 
@@ -96,6 +97,7 @@ void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 		//Shooting
 		EnhancedInputComponent->BindAction(GreenPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootGreenPortal);
 		EnhancedInputComponent->BindAction(RedPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootRedPortal);
+		EnhancedInputComponent->BindAction(PauseObject, ETriggerEvent::Completed, this, &AIDGJ3Character::Pause);
 		
 	}
 
@@ -186,8 +188,6 @@ void AIDGJ3Character::ShootPortal(EPortalType PortalType)
 
 	if (!IsValid(Hit.GetActor())) return;
 
-	TryActivatePortal(Hit);
-
 	UWorld* World = GetWorld();
 	if (!IsValid(World)) return;
 
@@ -198,6 +198,7 @@ void AIDGJ3Character::ShootPortal(EPortalType PortalType)
 			PortalsManager->SetPortal(PortalType, Portal);
 		}
 	}
+	TryActivatePortal(Hit);
 }
 
 void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
@@ -212,6 +213,12 @@ void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
 	}
 }
 
-void AIDGJ3Character::CheckIfPortalValid()
+void AIDGJ3Character::Pause()
 {
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
+	
+	if (Hit.GetActor() && Hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+	{
+		IPausable::Execute_TogglePause(Hit.GetActor());
+	}
 }

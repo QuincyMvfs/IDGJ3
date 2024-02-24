@@ -7,9 +7,11 @@
 #include "IDGJ3/Interfaces/Activatable.h"
 #include "Portal.generated.h"
 
+enum class EPortalType : uint8;
 class UBoxComponent;
 class UArrowComponent;
 class UStaticMeshComponent;
+class USceneComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalDeactivated);
@@ -28,13 +30,19 @@ private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UBoxComponent* Pivot;
+	USceneComponent* Pivot;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UStaticMeshComponent* StaticMesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UArrowComponent* Arrow;
+
+	UPROPERTY(BlueprintReadOnly, Category = "PortalType")
+	EPortalType PortalType;
 
 	UPROPERTY(BlueprintReadOnly)
 	uint8 bIsActive : 1;
@@ -53,4 +61,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetIsActive(bool IsActive);
 
+	UFUNCTION(BlueprintPure)
+	EPortalType GetPortalType();
 };
