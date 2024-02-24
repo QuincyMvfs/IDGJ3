@@ -9,6 +9,14 @@
 /**
  * 
  */
+class APortal;
+UENUM(BlueprintType)
+enum class EPortalType : uint8
+{
+	Green,
+	Red
+};
+
 UCLASS()
 class IDGJ3_API UPortalsManagerSubsystem : public UWorldSubsystem
 {
@@ -16,21 +24,12 @@ class IDGJ3_API UPortalsManagerSubsystem : public UWorldSubsystem
 
 protected:
 	UPROPERTY()
-	APortal* GreenPortal;
-
-	UPROPERTY()
-	APortal* RedPortal;
+	TMap<EPortalType, APortal*> Portals;
 
 public:
 	UFUNCTION(BlueprintPure)
-	APortal* GetGreenPortal();
-
-	UFUNCTION(BlueprintPure)
-	APortal* GetRedPortal();
+	APortal* GetPortal(EPortalType PortalType);
 
 	UFUNCTION(BlueprintCallable)
-	void SetGreenPortal(APortal* Portal);
-
-	UFUNCTION(BlueprintCallable)
-	void SetRedPortal(APortal* Portal);
+	void SetPortal(EPortalType PortalType, APortal* Portal);
 };

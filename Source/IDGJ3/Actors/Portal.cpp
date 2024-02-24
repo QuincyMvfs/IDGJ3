@@ -50,9 +50,6 @@ void APortal::Activate_Implementation()
 	SetIsActive(true);
 	
 	OnPortalActivated.Broadcast();
-	
-
-	PRINT_DEBUG_MESSAGE("Activated");
 }
 
 

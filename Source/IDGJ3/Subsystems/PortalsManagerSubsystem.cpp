@@ -3,22 +3,17 @@
 
 #include "PortalsManagerSubsystem.h"
 
-APortal* UPortalsManagerSubsystem::GetGreenPortal()
+APortal* UPortalsManagerSubsystem::GetPortal(EPortalType PortalType)
 {
-	return GreenPortal;
+	if (Portals.Contains(PortalType))
+	{
+		return Portals[PortalType];
+	}
+
+	return nullptr;
 }
 
-APortal* UPortalsManagerSubsystem::GetRedPortal()
+void UPortalsManagerSubsystem::SetPortal(EPortalType PortalType, APortal* Portal)
 {
-	return RedPortal;
-}
-
-void UPortalsManagerSubsystem::SetGreenPortal(APortal* Portal)
-{
-	GreenPortal = Portal;
-}
-
-void UPortalsManagerSubsystem::SetRedPortal(APortal* Portal)
-{
-	RedPortal = Portal;
+	Portals.Add(PortalType, Portal);
 }

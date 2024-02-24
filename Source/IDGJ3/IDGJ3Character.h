@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "IDGJ3Character.generated.h"
 
+enum class EPortalType : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedShoot, const FHitResult&, HitResult);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGreenShoot, const FHitResult&, HitResult);
 
@@ -77,7 +78,16 @@ protected:
 	void ShootRedPortal();
 
 	UFUNCTION()
+	void ShootPortal(EPortalType PortalType);
+
+	UFUNCTION()
+	bool InvalidateExistingPortal(EPortalType PortalType);
+
+	UFUNCTION()
 	void TryActivatePortal(FHitResult Hit);
+
+	UFUNCTION()
+	void CheckIfPortalValid();
 	
 protected:
 	// APawn interface
