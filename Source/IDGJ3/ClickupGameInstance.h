@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "ClickupGameInstance.generated.h"
 
+class ASoundManager;
 /**
  * 
  */
