@@ -73,6 +73,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
 	TArray<USoundWave*> M_TVTurnOffSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
+	TArray<USoundWave*> M_TVFailedSounds;
+
 	// Pressure Plate
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|PressurePlate")
 	TArray<USoundWave*> M_PressurePlatePressedSounds;
