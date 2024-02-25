@@ -156,6 +156,7 @@ void AIDGJ3Character::ShootRedPortal()
 	// 	}
 	// }
 	InvalidateExistingPortal(EPortalType::Red);
+	OnRedPortalPressedEvent.Broadcast();
 	//ShootPortal(EPortalType::Red);
 }
 
@@ -172,6 +173,7 @@ void AIDGJ3Character::ShootGreenPortal()
 	// }
 	
 	InvalidateExistingPortal(EPortalType::Green);
+	OnGreenPortalPressedEvent.Broadcast();
 	//ShootPortal(EPortalType::Green);
 }
 
@@ -267,6 +269,8 @@ void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
 
 void AIDGJ3Character::Pause()
 {
+	OnPauseEvent.Broadcast();
+	
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
 	
 	if (AActor* HitActor = Hit.GetActor())
