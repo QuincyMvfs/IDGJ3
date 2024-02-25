@@ -222,9 +222,11 @@ void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
 void AIDGJ3Character::Pause()
 {
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
-	
-	if (Hit.GetActor() && Hit.GetActor()->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+	if (AActor* HitActor = Hit.GetActor())
 	{
-		IPausable::Execute_TogglePause(Hit.GetActor());
+		if (HitActor->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+		{
+			IPausable::Execute_TogglePause(Hit.GetActor());
+		}
 	}
 }
