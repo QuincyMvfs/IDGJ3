@@ -146,125 +146,50 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 
 void AIDGJ3Character::ShootRedPortal()
 {
-	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
-	// {
-	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Red];
-	// 	PortalsManager->GetPortalsMap()[EPortalType::Red] = nullptr;
-	// 	if(Portal)
-	// 	{
-	// 		Portal->SetIsActive(false);
-	// 	}
-	// }
-	InvalidateExistingPortal(EPortalType::Red);
+	ShootingPortal(EPortalType::Red);
 	OnRedPortalPressedEvent.Broadcast();
-	//ShootPortal(EPortalType::Red);
 }
 
 void AIDGJ3Character::ShootGreenPortal()
 {
-	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
-	// {
-	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Green];
-	// 	PortalsManager->GetPortalsMap()[EPortalType::Green] = nullptr;
-	// 	if(Portal)
-	// 	{
-	// 		Portal->SetIsActive(false);
-	// 	}
-	// }
-	
-	InvalidateExistingPortal(EPortalType::Green);
+	ShootingPortal(EPortalType::Green);
 	OnGreenPortalPressedEvent.Broadcast();
-	//ShootPortal(EPortalType::Green);
 }
 
 
-void AIDGJ3Character::InvalidateExistingPortal(EPortalType PortalType)
+void AIDGJ3Character::ShootingPortal(EPortalType PortalType)
 {
 	UWorld* World = GetWorld();
 	if(!IsValid(World)) return;
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
 
-
-	if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+	UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>();
+	if (!IsValid(PortalsManager)) return;
+	
+	if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
 	{
-		if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
+		if(Portal->GetIsActive() && Portal->GetPortalType() == PortalType)
 		{
-			if(Portal->GetPortalType() == PortalType)
+			Portal->DeactivatePortal(PortalType);
+		}
+		else if(Portal->GetIsActive() && Portal->GetPortalType() != PortalType)
+		{
+			if(PortalsManager->GetPortalsMap()[PortalType])
 			{
-				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
-				if(Portal)
-				{
-					Portal->SetIsActive(false);
-				}
+				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 			}
-			else if (Portal->GetPortalType() == EPortalType::Null)
+			Portal->DeactivatePortal(Portal->GetPortalType());
+			Portal->ActivatePortal(PortalType);
+		}
+		else if(!Portal->GetIsActive())
+		{
+			if(PortalsManager->GetPortalsMap()[PortalType])
 			{
-				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
-				if(APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]))
-				{
-					if(SavedPortal)
-					{
-						SavedPortal->SetIsActive(false);
-						Portal->SetIsActive(false);
-					}
-				}
-				PortalsManager->SetPortal(PortalType, Portal);
-				Portal->ActivatePortal();
+				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 			}
-			else if(Portal->GetPortalType() != PortalType)
-			{
-				APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]);
-				
-				PortalsManager->GetPortalsMap()[Portal->GetPortalType()] = nullptr;
-				if(SavedPortal)
-				{
-					SavedPortal->SetIsActive(false);
-					
-				}
-
-				Portal->SetIsActive(false);
-
-				PortalsManager->SetPortal(PortalType, Portal);
-				Portal->ActivatePortal();
-			}
+			Portal->ActivatePortal(PortalType);
 		}
 	}
-}
-
-void AIDGJ3Character::ShootPortal(EPortalType PortalType)
-{
-	FColor Color = (PortalType == EPortalType::Green) ? FColor::Green : FColor::Red;
-	PRINT_DEBUG_MESSAGE((PortalType == EPortalType::Green) ? TEXT("Shooting Green") : TEXT("Shooting Red"));
-
-	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), Color);
-
-	if (PortalType == EPortalType::Green)
-	{
-		OnGreenShoot.Broadcast(Hit);
-	}
-	else if (PortalType == EPortalType::Red)
-	{
-		OnRedShoot.Broadcast(Hit);
-	}
-
-	if (!IsValid(Hit.GetActor())) return;
-
-	UWorld* World = GetWorld();
-	if (!IsValid(World)) return;
-
-	if (APortal* Portal = Cast<APortal>(Hit.GetActor()))
-	{
-		if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
-		{
-			PortalsManager->SetPortal(PortalType, Portal);
-		}
-	}
-	TryActivatePortal(Hit);
-}
-
-void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
-{
-
 }
 
 void AIDGJ3Character::Pause()

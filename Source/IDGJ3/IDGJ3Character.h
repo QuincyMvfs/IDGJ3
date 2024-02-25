@@ -103,13 +103,7 @@ protected:
 	void ShootRedPortal();
 
 	UFUNCTION()
-	void ShootPortal(EPortalType PortalType);
-
-	UFUNCTION()
-	void InvalidateExistingPortal(EPortalType PortalType);
-
-	UFUNCTION()
-	void TryActivatePortal(FHitResult Hit);
+	void ShootingPortal(EPortalType PortalType);
 
 	UFUNCTION()
 	void Pause();
