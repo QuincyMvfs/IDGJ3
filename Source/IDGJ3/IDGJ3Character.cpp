@@ -24,7 +24,7 @@ AIDGJ3Character::AIDGJ3Character()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	
+		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -53,12 +53,6 @@ AIDGJ3Character::AIDGJ3Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Skeletal Mesh's
-	HandsSkeletalMesh = GetMesh();
-	HandsSkeletalMesh->SetupAttachment(FollowCamera);
-	RemoteMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RemoteMesh"));
-	RemoteMesh->SetupAttachment(HandsSkeletalMesh); // "RightHand"
-	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
@@ -147,33 +141,87 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 
 void AIDGJ3Character::ShootRedPortal()
 {
-	if(InvalidateExistingPortal(EPortalType::Red)) return;
-	ShootPortal(EPortalType::Red);
+	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
+	// {
+	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Red];
+	// 	PortalsManager->GetPortalsMap()[EPortalType::Red] = nullptr;
+	// 	if(Portal)
+	// 	{
+	// 		Portal->SetIsActive(false);
+	// 	}
+	// }
+	InvalidateExistingPortal(EPortalType::Red);
+	//ShootPortal(EPortalType::Red);
 }
 
 void AIDGJ3Character::ShootGreenPortal()
-{			
-	if(InvalidateExistingPortal(EPortalType::Green)) return;
-	ShootPortal(EPortalType::Green);
+{
+	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
+	// {
+	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Green];
+	// 	PortalsManager->GetPortalsMap()[EPortalType::Green] = nullptr;
+	// 	if(Portal)
+	// 	{
+	// 		Portal->SetIsActive(false);
+	// 	}
+	// }
+	
+	InvalidateExistingPortal(EPortalType::Green);
+	//ShootPortal(EPortalType::Green);
 }
 
 
-bool AIDGJ3Character::InvalidateExistingPortal(EPortalType PortalType)
+void AIDGJ3Character::InvalidateExistingPortal(EPortalType PortalType)
 {
 	UWorld* World = GetWorld();
-	if(!IsValid(World)) return false;
-	
+	if(!IsValid(World)) return;
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
+
+
 	if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
 	{
-		APortal* Portal = PortalsManager->GetPortal(PortalType);
-		if(IsValid(Portal))
+		if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
 		{
-			Portal->SetIsActive(false);
-			PortalsManager->SetPortal(PortalType, nullptr);
-			return true;
+			if(Portal->GetPortalType() == PortalType)
+			{
+				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
+				if(Portal)
+				{
+					Portal->SetIsActive(false);
+				}
+			}
+			else if (Portal->GetPortalType() == EPortalType::Null)
+			{
+				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
+				if(APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]))
+				{
+					if(SavedPortal)
+					{
+						SavedPortal->SetIsActive(false);
+						Portal->SetIsActive(false);
+					}
+				}
+				PortalsManager->SetPortal(PortalType, Portal);
+				Portal->ActivatePortal();
+			}
+			else if(Portal->GetPortalType() != PortalType)
+			{
+				APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]);
+				
+				PortalsManager->GetPortalsMap()[Portal->GetPortalType()] = nullptr;
+				if(SavedPortal)
+				{
+					SavedPortal->SetIsActive(false);
+					
+				}
+
+				Portal->SetIsActive(false);
+
+				PortalsManager->SetPortal(PortalType, Portal);
+				Portal->ActivatePortal();
+			}
 		}
 	}
-	return false;
 }
 
 void AIDGJ3Character::ShootPortal(EPortalType PortalType)
@@ -209,19 +257,13 @@ void AIDGJ3Character::ShootPortal(EPortalType PortalType)
 
 void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
 {
-	if(Hit.GetActor()->Implements<UActivatable>())
-	{
-		IActivatable* ActivatableActor = Cast<IActivatable>(Hit.GetActor());
-		if (ActivatableActor)
-		{
-			ActivatableActor->Execute_Activate(Hit.GetActor());
-		}
-	}
+
 }
 
 void AIDGJ3Character::Pause()
 {
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
+	
 	if (AActor* HitActor = Hit.GetActor())
 	{
 		if (HitActor->GetClass()->ImplementsInterface(UPausable::StaticClass()))
