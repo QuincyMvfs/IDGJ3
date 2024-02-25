@@ -9,6 +9,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Actors/Portal.h"
+#include "Components/ShootingComponent.h"
+#include "Interfaces/Activatable.h"
+#include "Interfaces/Pausable.h" 
+#include "Subsystems/PortalsManagerSubsystem.h"
+#include "Utils/CustomUtils.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -47,8 +53,15 @@ AIDGJ3Character::AIDGJ3Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	HandsSkeletalMesh = GetMesh();
+	HandsSkeletalMesh->SetupAttachment(FollowCamera);
+	RemoteStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Remote"));
+	RemoteStaticMesh->SetupAttachment(HandsSkeletalMesh, "RightHand");
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	ShootingComponent = CreateDefaultSubobject<UShootingComponent>(TEXT("ShootingComponent"));
 }
 
 void AIDGJ3Character::BeginPlay()
@@ -69,6 +82,8 @@ void AIDGJ3Character::BeginPlay()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+
+
 void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
@@ -84,6 +99,11 @@ void AIDGJ3Character::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AIDGJ3Character::Look);
 
+		//Shooting
+		EnhancedInputComponent->BindAction(GreenPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootGreenPortal);
+		EnhancedInputComponent->BindAction(RedPortal, ETriggerEvent::Completed, this, &AIDGJ3Character::ShootRedPortal);
+		EnhancedInputComponent->BindAction(PauseObject, ETriggerEvent::Completed, this, &AIDGJ3Character::Pause);
+		
 	}
 
 }
@@ -124,6 +144,136 @@ void AIDGJ3Character::Look(const FInputActionValue& Value)
 	}
 }
 
+void AIDGJ3Character::ShootRedPortal()
+{
+	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
+	// {
+	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Red];
+	// 	PortalsManager->GetPortalsMap()[EPortalType::Red] = nullptr;
+	// 	if(Portal)
+	// 	{
+	// 		Portal->SetIsActive(false);
+	// 	}
+	// }
+	InvalidateExistingPortal(EPortalType::Red);
+	//ShootPortal(EPortalType::Red);
+}
+
+void AIDGJ3Character::ShootGreenPortal()
+{
+	// if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
+	// {
+	// 	APortal* Portal = PortalsManager->GetPortalsMap()[EPortalType::Green];
+	// 	PortalsManager->GetPortalsMap()[EPortalType::Green] = nullptr;
+	// 	if(Portal)
+	// 	{
+	// 		Portal->SetIsActive(false);
+	// 	}
+	// }
+	
+	InvalidateExistingPortal(EPortalType::Green);
+	//ShootPortal(EPortalType::Green);
+}
 
 
+void AIDGJ3Character::InvalidateExistingPortal(EPortalType PortalType)
+{
+	UWorld* World = GetWorld();
+	if(!IsValid(World)) return;
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
 
+
+	if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+	{
+		if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
+		{
+			if(Portal->GetPortalType() == PortalType)
+			{
+				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
+				if(Portal)
+				{
+					Portal->SetIsActive(false);
+				}
+			}
+			else if (Portal->GetPortalType() == EPortalType::Null)
+			{
+				PortalsManager->GetPortalsMap()[PortalType] = nullptr;
+				if(APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]))
+				{
+					if(SavedPortal)
+					{
+						SavedPortal->SetIsActive(false);
+						Portal->SetIsActive(false);
+					}
+				}
+				PortalsManager->SetPortal(PortalType, Portal);
+				Portal->ActivatePortal();
+			}
+			else if(Portal->GetPortalType() != PortalType)
+			{
+				APortal* SavedPortal = Cast<APortal>(PortalsManager->GetPortalsMap()[PortalType]);
+				
+				PortalsManager->GetPortalsMap()[Portal->GetPortalType()] = nullptr;
+				if(SavedPortal)
+				{
+					SavedPortal->SetIsActive(false);
+					
+				}
+
+				Portal->SetIsActive(false);
+
+				PortalsManager->SetPortal(PortalType, Portal);
+				Portal->ActivatePortal();
+			}
+		}
+	}
+}
+
+void AIDGJ3Character::ShootPortal(EPortalType PortalType)
+{
+	FColor Color = (PortalType == EPortalType::Green) ? FColor::Green : FColor::Red;
+	PRINT_DEBUG_MESSAGE((PortalType == EPortalType::Green) ? TEXT("Shooting Green") : TEXT("Shooting Red"));
+
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), Color);
+
+	if (PortalType == EPortalType::Green)
+	{
+		OnGreenShoot.Broadcast(Hit);
+	}
+	else if (PortalType == EPortalType::Red)
+	{
+		OnRedShoot.Broadcast(Hit);
+	}
+
+	if (!IsValid(Hit.GetActor())) return;
+
+	UWorld* World = GetWorld();
+	if (!IsValid(World)) return;
+
+	if (APortal* Portal = Cast<APortal>(Hit.GetActor()))
+	{
+		if (UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>())
+		{
+			PortalsManager->SetPortal(PortalType, Portal);
+		}
+	}
+	TryActivatePortal(Hit);
+}
+
+void AIDGJ3Character::TryActivatePortal(FHitResult Hit)
+{
+
+}
+
+void AIDGJ3Character::Pause()
+{
+	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
+	
+	if (AActor* HitActor = Hit.GetActor())
+	{
+		if (HitActor->GetClass()->ImplementsInterface(UPausable::StaticClass()))
+		{
+			IPausable::Execute_TogglePause(Hit.GetActor());
+		}
+	}
+}
