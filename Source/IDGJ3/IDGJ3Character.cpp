@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Actors/Portal.h"
+#include "Components/PausedData.h"
 #include "Components/ShootingComponent.h"
 #include "Interfaces/Activatable.h"
 #include "Interfaces/Pausable.h" 
@@ -166,36 +167,41 @@ void AIDGJ3Character::ShootingPortal(EPortalType PortalType)
 	UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>();
 	if (!IsValid(PortalsManager)) return;
 	
-	if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
+	APortal* Portal = Cast<APortal>(Hit.GetActor());
+	if(!IsValid(Portal))
 	{
-		if(Portal->GetIsActive() && Portal->GetPortalType() == PortalType)
+		OnSetTVFailEvent.Broadcast();
+		return;
+	}
+		
+	if(Portal->GetIsActive() && Portal->GetPortalType() == PortalType)
+	{
+		Portal->DeactivatePortal(PortalType);
+		OnPauseTVEvent.Broadcast();
+	}
+	else if(Portal->GetIsActive() && Portal->GetPortalType() != PortalType)
+	{
+		if(PortalsManager->GetPortalsMap()[PortalType])
 		{
-			Portal->DeactivatePortal(PortalType);
+			PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 		}
-		else if(Portal->GetIsActive() && Portal->GetPortalType() != PortalType)
+		Portal->DeactivatePortal(Portal->GetPortalType());
+		Portal->ActivatePortal(PortalType);
+		OnPlayTVEvent.Broadcast();
+	}
+	else if(!Portal->GetIsActive())
+	{
+		if(PortalsManager->GetPortalsMap()[PortalType])
 		{
-			if(PortalsManager->GetPortalsMap()[PortalType])
-			{
-				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
-			}
-			Portal->DeactivatePortal(Portal->GetPortalType());
-			Portal->ActivatePortal(PortalType);
+			PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 		}
-		else if(!Portal->GetIsActive())
-		{
-			if(PortalsManager->GetPortalsMap()[PortalType])
-			{
-				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
-			}
-			Portal->ActivatePortal(PortalType);
-		}
+		Portal->ActivatePortal(PortalType);
+		OnPlayTVEvent.Broadcast();
 	}
 }
 
 void AIDGJ3Character::Pause()
 {
-	OnPauseEvent.Broadcast();
-	
 	FHitResult Hit = ShootingComponent->Shoot(FollowCamera->GetComponentLocation(), FollowCamera->GetForwardVector(), FColor::Cyan);
 	
 	if (AActor* HitActor = Hit.GetActor())
@@ -203,6 +209,13 @@ void AIDGJ3Character::Pause()
 		if (HitActor->GetClass()->ImplementsInterface(UPausable::StaticClass()))
 		{
 			IPausable::Execute_TogglePause(Hit.GetActor());
+			if (const UPausedData* PauseData = HitActor->GetComponentByClass<UPausedData>())
+			{
+				if (PauseData->IsPaused) { OnPauseEvent.Broadcast(); }
+				else { OnUnPauseEvent.Broadcast(); }
+			}
 		}
+		else { OnPauseFailedEvent.Broadcast(); }
 	}
+	else { OnPauseFailedEvent.Broadcast(); }
 }
