@@ -90,7 +90,7 @@ protected:
 	void ShootPortal(EPortalType PortalType);
 
 	UFUNCTION()
-	bool InvalidateExistingPortal(EPortalType PortalType);
+	void InvalidateExistingPortal(EPortalType PortalType);
 
 	UFUNCTION()
 	void TryActivatePortal(FHitResult Hit);
