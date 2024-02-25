@@ -73,6 +73,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
 	TArray<USoundWave*> M_TVTurnOffSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
+	TArray<USoundWave*> M_TVFailedSounds;
+
 	// Pressure Plate
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|PressurePlate")
 	TArray<USoundWave*> M_PressurePlatePressedSounds;
@@ -82,7 +85,10 @@ public:
 
 	// Door
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
-	TArray<USoundWave*> M_DoorMovingSounds;
+	TArray<USoundWave*> M_DoorOpeningSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_DoorClosingSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
 	TArray<USoundWave*> M_DoorOpenSounds;
