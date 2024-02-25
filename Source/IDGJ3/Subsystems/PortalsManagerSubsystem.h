@@ -27,7 +27,9 @@ protected:
 	UPROPERTY()
 	TMap<EPortalType, APortal*> PortalsMap;
 
-public:	
+public:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	
 	UFUNCTION(BlueprintPure)
 	APortal* GetPortal(EPortalType PortalType);
 

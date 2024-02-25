@@ -63,4 +63,11 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	EPortalType GetPortalType();
+
+	UFUNCTION()
+	void ActivatePortal();
+
+	UFUNCTION()
+	void UpdatePortal();
+	
 };
