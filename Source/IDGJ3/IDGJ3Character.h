@@ -10,6 +10,9 @@
 enum class EPortalType : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedShoot, const FHitResult&, HitResult);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGreenShoot, const FHitResult&, HitResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRedPortalPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGreenPortalPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPause);
 
 class UShootingComponent;
 UCLASS(config=Game)
@@ -61,6 +64,16 @@ class AIDGJ3Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* PauseObject;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnPause OnPauseEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRedPortalPressed OnRedPortalPressedEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGreenPortalPressed OnGreenPortalPressedEvent;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnGreenShoot OnGreenShoot;
 

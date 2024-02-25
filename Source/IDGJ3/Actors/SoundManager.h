@@ -101,4 +101,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Teleport")
 	TArray<USoundWave*> M_TeleportedSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Pause")
+	TArray<USoundWave*> M_PauseSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Pause")
+	TArray<USoundWave*> M_UnPauseSounds;
+
 };
