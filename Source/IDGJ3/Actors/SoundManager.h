@@ -52,7 +52,13 @@ public:
 
 	// Object Dropping
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
-	TArray<USoundWave*> M_ObjectDropWoodSounds;
+	TArray<USoundWave*> M_ObjectQuietDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectMediumDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectLoudDropSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
 	TArray<USoundWave*> M_ObjectDropLeadSounds;
@@ -66,6 +72,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
 	TArray<USoundWave*> M_TVTurnOffSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
+	TArray<USoundWave*> M_TVFailedSounds;
 
 	// Pressure Plate
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|PressurePlate")
