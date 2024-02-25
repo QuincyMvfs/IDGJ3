@@ -24,7 +24,7 @@ AIDGJ3Character::AIDGJ3Character()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+	
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -53,6 +53,12 @@ AIDGJ3Character::AIDGJ3Character()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	// Skeletal Mesh's
+	HandsSkeletalMesh = GetMesh();
+	HandsSkeletalMesh->SetupAttachment(FollowCamera);
+	RemoteMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RemoteMesh"));
+	RemoteMesh->SetupAttachment(HandsSkeletalMesh); // "RightHand"
+	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
