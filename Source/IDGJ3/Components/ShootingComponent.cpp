@@ -24,7 +24,7 @@ FHitResult UShootingComponent::Shoot(const FVector& Start, const FVector& Direct
 		HitResult.Location = HitResult.ImpactPoint;
 	}
 
-	DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, Color, false, 3.0f, 0, 1.0f);
+	//DrawDebugLine(GetWorld(), Start, HitResult.ImpactPoint, Color, false, 3.0f, 0, 1.0f);
 	return HitResult;
 }
 
