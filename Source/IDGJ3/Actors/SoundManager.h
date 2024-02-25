@@ -85,7 +85,10 @@ public:
 
 	// Door
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
-	TArray<USoundWave*> M_DoorMovingSounds;
+	TArray<USoundWave*> M_DoorOpeningSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_DoorClosingSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
 	TArray<USoundWave*> M_DoorOpenSounds;
