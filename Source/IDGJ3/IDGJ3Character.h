@@ -29,6 +29,9 @@ class AIDGJ3Character : public ACharacter
 	class USkeletalMeshComponent* HandsSkeletalMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RemoteStaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* RemoteMesh;
 	
 	/** MappingContext */
