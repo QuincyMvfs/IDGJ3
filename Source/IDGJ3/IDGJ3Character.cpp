@@ -166,29 +166,29 @@ void AIDGJ3Character::ShootingPortal(EPortalType PortalType)
 	UPortalsManagerSubsystem* PortalsManager = World->GetSubsystem<UPortalsManagerSubsystem>();
 	if (!IsValid(PortalsManager)) return;
 	
-	if(APortal* Portal = Cast<APortal>(Hit.GetActor()))
+	APortal* Portal = Cast<APortal>(Hit.GetActor());
+	if(!IsValid(Portal)) return;
+		
+	if(Portal->GetIsActive() && Portal->GetPortalType() == PortalType)
 	{
-		if(Portal->GetIsActive() && Portal->GetPortalType() == PortalType)
+		Portal->DeactivatePortal(PortalType);
+	}
+	else if(Portal->GetIsActive() && Portal->GetPortalType() != PortalType)
+	{
+		if(PortalsManager->GetPortalsMap()[PortalType])
 		{
-			Portal->DeactivatePortal(PortalType);
+			PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 		}
-		else if(Portal->GetIsActive() && Portal->GetPortalType() != PortalType)
+		Portal->DeactivatePortal(Portal->GetPortalType());
+		Portal->ActivatePortal(PortalType);
+	}
+	else if(!Portal->GetIsActive())
+	{
+		if(PortalsManager->GetPortalsMap()[PortalType])
 		{
-			if(PortalsManager->GetPortalsMap()[PortalType])
-			{
-				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
-			}
-			Portal->DeactivatePortal(Portal->GetPortalType());
-			Portal->ActivatePortal(PortalType);
+			PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
 		}
-		else if(!Portal->GetIsActive())
-		{
-			if(PortalsManager->GetPortalsMap()[PortalType])
-			{
-				PortalsManager->GetPortalsMap()[PortalType]->DeactivatePortal(PortalType);
-			}
-			Portal->ActivatePortal(PortalType);
-		}
+		Portal->ActivatePortal(PortalType);
 	}
 }
 

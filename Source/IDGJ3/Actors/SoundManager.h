@@ -52,7 +52,13 @@ public:
 
 	// Object Dropping
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
-	TArray<USoundWave*> M_ObjectDropWoodSounds;
+	TArray<USoundWave*> M_ObjectQuietDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectMediumDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectLoudDropSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
 	TArray<USoundWave*> M_ObjectDropLeadSounds;
