@@ -5,6 +5,15 @@
 
 #include "IDGJ3/Actors/Portal.h"
 
+void UPortalsManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+
+	PortalsMap.Add(EPortalType::Green, nullptr);
+	PortalsMap.Add(EPortalType::Red, nullptr);
+	
+}
+
 APortal* UPortalsManagerSubsystem::GetPortal(EPortalType PortalType)
 {
 	if (PortalsMap.Contains(PortalType))
@@ -17,7 +26,10 @@ APortal* UPortalsManagerSubsystem::GetPortal(EPortalType PortalType)
 
 void UPortalsManagerSubsystem::SetPortal(EPortalType PortalType, APortal* Portal)
 {
-	PortalsMap.Add(PortalType, Portal);
+	if(PortalsMap.Contains(PortalType))
+	{
+		PortalsMap[PortalType] = Portal;
+	}
 }
 
 TMap<EPortalType, APortal*> UPortalsManagerSubsystem::GetPortalsMap()

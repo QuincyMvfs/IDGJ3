@@ -40,6 +40,7 @@ void APortal::SetIsActive(bool IsActive)
 
 	if(!bIsActive)
 	{
+		PortalType = EPortalType::Null;
 		OnPortalDeactivated.Broadcast();
 	}
 }
@@ -49,14 +50,8 @@ EPortalType APortal::GetPortalType()
 	return PortalType;
 }
 
-void APortal::BeginPlay()
+void APortal::ActivatePortal()
 {
-	Super::BeginPlay();
-}
-
-void APortal::Activate_Implementation()
-{
-	IActivatable::Activate_Implementation();
 	SetIsActive(true);
 
 	UWorld* World = GetWorld();
@@ -68,6 +63,27 @@ void APortal::Activate_Implementation()
 	}
 	
 	OnPortalActivated.Broadcast();
+}
+
+void APortal::UpdatePortal()
+{
+	SetIsActive(false);
+	if (UPortalsManagerSubsystem* PortalsManager = GetWorld()->GetSubsystem<UPortalsManagerSubsystem>())
+	{
+		PortalsManager->SetPortal(PortalType, nullptr);
+	}
+}
+
+void APortal::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void APortal::Activate_Implementation()
+{
+	IActivatable::Activate_Implementation();
+
+	ActivatePortal();
 }
 
 

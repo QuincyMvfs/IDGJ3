@@ -29,6 +29,9 @@ class AIDGJ3Character : public ACharacter
 	class USkeletalMeshComponent* HandsSkeletalMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RemoteStaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* RemoteMesh;
 	
 	/** MappingContext */
@@ -90,7 +93,7 @@ protected:
 	void ShootPortal(EPortalType PortalType);
 
 	UFUNCTION()
-	bool InvalidateExistingPortal(EPortalType PortalType);
+	void InvalidateExistingPortal(EPortalType PortalType);
 
 	UFUNCTION()
 	void TryActivatePortal(FHitResult Hit);
