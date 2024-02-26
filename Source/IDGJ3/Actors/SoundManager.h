@@ -96,6 +96,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
 	TArray<USoundWave*> M_DoorClosedSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_ShutterOpenSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_ShutterCloseSounds;
+
 	// Music
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Music")
 	USoundWave* GameMusic;
