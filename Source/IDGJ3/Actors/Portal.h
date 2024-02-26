@@ -65,7 +65,7 @@ public:
 	UFUNCTION()
 	void ActivatePortal(EPortalType PortalTyp);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DeactivatePortal(EPortalType PortalTyp);
 	
 };
