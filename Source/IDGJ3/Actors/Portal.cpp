@@ -53,7 +53,6 @@ void APortal::ActivatePortal(EPortalType PortalTyp)
 		PortalsManager->SetPortal(PortalType, this);
 	}
 	SetIsActive(true);
-	
 	OnPortalActivated.Broadcast();
 }
 
@@ -66,7 +65,6 @@ void APortal::DeactivatePortal(EPortalType PortalTyp)
 	}
 	SetIsActive(false);
 	OnPortalDeactivated.Broadcast();
-
 }
 
 void APortal::BeginPlay()
