@@ -52,7 +52,13 @@ public:
 
 	// Object Dropping
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
-	TArray<USoundWave*> M_ObjectDropWoodSounds;
+	TArray<USoundWave*> M_ObjectQuietDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectMediumDropSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
+	TArray<USoundWave*> M_ObjectLoudDropSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Object")
 	TArray<USoundWave*> M_ObjectDropLeadSounds;
@@ -67,6 +73,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
 	TArray<USoundWave*> M_TVTurnOffSounds;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|TV")
+	TArray<USoundWave*> M_TVFailedSounds;
+
 	// Pressure Plate
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|PressurePlate")
 	TArray<USoundWave*> M_PressurePlatePressedSounds;
@@ -76,13 +85,22 @@ public:
 
 	// Door
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
-	TArray<USoundWave*> M_DoorMovingSounds;
+	TArray<USoundWave*> M_DoorOpeningSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_DoorClosingSounds;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
 	TArray<USoundWave*> M_DoorOpenSounds;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
 	TArray<USoundWave*> M_DoorClosedSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_ShutterOpenSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Door")
+	TArray<USoundWave*> M_ShutterCloseSounds;
 
 	// Music
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Music")
@@ -100,5 +118,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Teleport")
 	TArray<USoundWave*> M_TeleportedSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Pause")
+	TArray<USoundWave*> M_PauseSounds;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Sounds|Pause")
+	TArray<USoundWave*> M_UnPauseSounds;
 
 };

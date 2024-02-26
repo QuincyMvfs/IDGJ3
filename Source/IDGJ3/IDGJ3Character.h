@@ -10,6 +10,14 @@
 enum class EPortalType : uint8;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRedShoot, const FHitResult&, HitResult);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGreenShoot, const FHitResult&, HitResult);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRedPortalPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGreenPortalPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPauseTV);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayTV);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetTVFail);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPause);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnPause);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPauseFailed);
 
 class UShootingComponent;
 UCLASS(config=Game)
@@ -61,6 +69,31 @@ class AIDGJ3Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* PauseObject;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnPause OnPauseEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUnPause OnUnPauseEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPauseFailed OnPauseFailedEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayTV OnPlayTVEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPauseTV OnPauseTVEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSetTVFail OnSetTVFailEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRedPortalPressed OnRedPortalPressedEvent;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGreenPortalPressed OnGreenPortalPressedEvent;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnGreenShoot OnGreenShoot;
 
@@ -90,13 +123,7 @@ protected:
 	void ShootRedPortal();
 
 	UFUNCTION()
-	void ShootPortal(EPortalType PortalType);
-
-	UFUNCTION()
-	void InvalidateExistingPortal(EPortalType PortalType);
-
-	UFUNCTION()
-	void TryActivatePortal(FHitResult Hit);
+	void ShootingPortal(EPortalType PortalType);
 
 	UFUNCTION()
 	void Pause();

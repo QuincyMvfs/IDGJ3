@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPortalDeactivated);
 
 UCLASS()
-class IDGJ3_API APortal : public AActor, public IActivatable
+class IDGJ3_API APortal : public AActor
 {
 	GENERATED_BODY()
 
@@ -50,8 +50,6 @@ protected:
 protected:
 	virtual void BeginPlay() override;
 
-	void Activate_Implementation() override;
-
 public:	
 	APortal();
 
@@ -65,9 +63,9 @@ public:
 	EPortalType GetPortalType();
 
 	UFUNCTION()
-	void ActivatePortal();
+	void ActivatePortal(EPortalType PortalTyp);
 
 	UFUNCTION()
-	void UpdatePortal();
+	void DeactivatePortal(EPortalType PortalTyp);
 	
 };
